@@ -1,0 +1,81 @@
+#!/bin/bash
+if [ -z $2 ]
+then
+	echo "usage: find_missing root_source root_target"
+	echo "Description: compares two roots files. generates $file_found and $file_missing" 
+	echo "Bugs: no"
+	echo "file exists error is caused by same filename with multiple sources"
+	exit 1
+fi
+dir_tmp="/tmp/find_missing/"
+file_found="${dir_tmp}found.txt"
+file_missing="${dir_tmp}missing.txt"
+file_source_names="${dir_tmp}source_names.txt"
+file_source_paths="${dir_tmp}source_paths.txt"
+file_target_paths="${dir_tmp}target_paths.txt"
+dir_missing_files="${dir_tmp}missing_file/"
+
+mkdir $dir_tmp
+rm -r $file_found $file_missing $file_source_names $file_source_paths $file_target_paths $dir_missing_files
+iFound=0
+iMissing=0
+root_source="$1";
+root_target="$2";
+echo "generating filePathList of directory '$root_source'"
+find $root_source > $file_source_paths
+echo "generating filePathList of directory '$root_target'"
+find $root_target > $file_target_paths
+source_lengh=$(cat $file_source_paths | wc -l)
+for iSource in $(seq 1 1 $source_lengh)
+do
+	filename=$(cat $file_source_paths | awk NR==$iSource | rev | cut -d '/' -f 1 | rev | sort)
+	echo "$filename" >> $file_source_names
+	if grep -q "$filename" $file_target_paths 
+	then
+		echo "$filename" >> $file_found
+		isFound="found"
+		let iFound++
+	else
+		cat $file_source_paths | awk NR==$iSource >> $file_missing
+		isFound="missing"
+		let iMissing++
+	fi
+	if [ $(expr $iSource % 64) == 0 ] #useroutput
+	then
+		clear;
+		echo "generating filelist of directory '$root_source' ...done"
+		echo "generating filelist of directory '$root_target' ...done"
+		echo "converting filelist of directory '$root_source':--->"
+		echo "    task: extract filename from fullpath: "
+		echo "    grepping for filename $iSource/$source_lengh == $filename"
+		echo "    in the filePathList of directory $root_target == $isFound"
+		echo "lists are stored in the files '$file_found' and '$file_missing'"
+		echo "found/missing: $(cat $file_found | wc -l)/$(cat $file_missing | wc -l ) "
+	fi
+done
+
+read -p "link all missing files to the folder '$dir_missing_files'? [y/n]" answer
+if [ "y" == $answer ]
+then
+	mkdir $dir_missing_files
+	for i in $(seq 1 1 $(cat $file_missing | wc -l))
+	do
+		ln -s "$(cat $file_missing | awk NR==$i)" $dir_missing_files
+		lines=$( cat $file_missing | wc -l)
+		
+		if [ $(expr $i % 64) == 0 ] #useroutput
+		then
+			clear;
+			echo "generating filelist of directory '$root_source' ...done"
+			echo "generating filelist of directory '$root_target' ...done"
+			echo "converting filelist of directory '$root_source':--->"
+			echo "    task: extract filename from fullpath: "
+			echo "    grepping for filename $iSource/$source_lengh == $filename"
+			echo "    in the filePathList of directory $root_target == $isFound"
+			echo "lists are stored in the files '$file_found' and '$file_missing'"
+			echo "found/missing: $iFound/$iMissing "
+			echo "creating link $i/$lines"
+			echo "file exists error is caused by same filename with multiple sources"
+		fi
+	done
+fi

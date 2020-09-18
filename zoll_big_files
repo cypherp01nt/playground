@@ -1,0 +1,16 @@
+#!/bin/bash
+targetDir=$1
+minimumFilesize=$2
+if [ -z $2 ]
+then
+	echo "usage: [targeDir] [minimuFilesize]"
+	exit
+fi
+for i in $targetDir/*
+do 
+
+	if [ $(du "$i" | cut -f 1) -lt $minimumFilesize ]
+	then 
+		rm -v "$i"
+	fi
+done

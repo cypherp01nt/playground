@@ -1,0 +1,21 @@
+#!/bin/bash
+#extract images from fileslist:
+
+
+echo "executing: 
+	grep .jpg /tmp/find_missing/missing.txt > /tmp/find_missing/missing_all_jpg.txt
+	grep .jpeg /tmp/find_missing/missing.txt > /tmp/find_missing/missing_all_jpeg.txt
+	grep .png /tmp/find_missing/missing.txt > /tmp/find_missing/missing_all_png.txt
+	grep .txt /tmp/find_missing/missing.txt > /tmp/find_missing/missing_all_txt.txt
+	grep .odt /tmp/find_missing/missing.txt > /tmp/find_missing/missing_all_odt.txt
+	grep .pdf /tmp/find_missing/missing.txt > /tmp/find_missing/missing_all_pdf.txt
+	cat /tmp/find_missing/missing_all_* > /tmp/find_missing/missing_merged.txt
+"
+
+grep .jpg /tmp/find_missing/missing.txt > /tmp/find_missing/missing_all_jpg.txt
+grep .jpeg /tmp/find_missing/missing.txt > /tmp/find_missing/missing_all_jpeg.txt
+grep .png /tmp/find_missing/missing.txt > /tmp/find_missing/missing_all_png.txt
+grep .txt /tmp/find_missing/missing.txt > /tmp/find_missing/missing_all_txt.txt
+grep .odt /tmp/find_missing/missing.txt > /tmp/find_missing/missing_all_odt.txt
+grep .pdf /tmp/find_missing/missing.txt > /tmp/find_missing/missing_all_pdf.txt
+cat /tmp/find_missing/missing_all_* > /tmp/find_missing/missing_merged.txt

@@ -1,0 +1,108 @@
+#!/usr/bin/bash
+mkdir -p sorter sorter/images sorter/images/organicFinal sorter/images/organic2reduce sorter/images/documentFinal sorter/images/document2reduce
+mkdir -p sorter/videos sorter/videos/2reduce sorter/videos/final
+mkdir -p sorter/pdf
+
+counter=0
+total=$(ls *jpg *jpeg *png | wc -l)
+for i in ls *jpg *jpeg *png
+do
+	let counter++
+	echo "File: $i"
+	feh "$i"
+	read -p "[a] organicKeep [s] organic2reduce [d] documentKeep [f] document2reduce [g] remove [h] rename ...your choise:   	" answer; 
+	newName="";
+	if [ $answer == "h" ]; 
+	then
+		read -p "new name ...	" newFilename; 
+		fileExtension=$(echo "$i" | rev | cut -d '.' -f 1 | rev)
+		newName="${newFilename}.$fileExtension"
+		read -p "[a] organicKeep [s] organic2reduce [d] documentKeep [f] document2reduce ...your choise:   	" answer; 
+	fi
+	if [ $answer == "a" ]; 
+	then 
+		mv --verbose "$i" "./sorter/images/organicFinal/$newName"; 
+	elif [ $answer == "s" ]; 
+	then 
+		mv --verbose "$i" "./sorter/images/organic2reduce/$newName"; 
+	elif [ $answer == "d" ]; 
+	then 
+		mv --verbose "$i" "./sorter/images/documentFinal/$newName"; 
+	elif [ $answer == "f" ]; 
+	then
+		mv --verbose "$i" "./sorter/images/document2reduce/$newName";
+	elif [ $answer == "g" ]; 
+	then 
+		rm --verbose "$i";
+	fi;
+	echo "${counter}/$total"
+done
+
+
+	for i in ls *avi *3gp *webm *mpeg
+	do
+		echo "File: $i"
+		cvlc --no-video-title-show "$i"
+		read -p "[a] keep [s] reduce [d] remove ...your choise:   	" answer; 
+		
+		if [ $answer == "a" ]; 
+		then 
+			mv --verbose "$i" ./sorter/videos/final/; 
+		elif [ $answer == "s" ]; 
+		then 
+			mv --verbose "$i" ./sorter/videos/2reduce/; 
+		elif [ $answer == "d" ]; 
+		then 
+			rm --verbose "$i"; 
+		fi;
+	done
+
+for i in ls *pdf
+do
+	echo "File: $i"
+	qpdfview "$i"
+	read -p "[a] keep [s] convert2jpg [g] remove [h] rename...your choise:   	" answer; 
+	
+	if [ $answer == "h" ]; 
+	then
+		read -p "new name ...	" newFilename; 
+		fileExtension=$(echo "$i" | rev | cut -d '.' -f 1 | rev)
+		newName="${newFilename}.$fileExtension"
+		read -p "[a] keep [s] convert2jpg ...your choise:   	" answer; 
+	elif [ $answer == "a" ]; 
+	then 
+		mv --verbose "$i" ./sorter/pdf/; 
+	elif [ $answer == "s" ]; 
+	then 
+		convert -verbose "$i" "${i}.jpg"; 
+	elif [ $answer == "g" ]; 
+	then 
+		rm --verbose "$i"; 
+	elif [ $answer == "h" ]; 
+	then 
+		 "$i"; 
+	fi;
+done
+	
+for i in sorter/images/*
+do 
+	if [ $(du "$i" | cut -f1) == 4 ] 
+	then 
+		echo "removing empty directories:.." 
+		rm -r --verbose "$i"  
+	fi 
+done
+for i in sorter/videos/*
+do 
+	if [ $(du "$i" | cut -f1) == 4 ] 
+	then 
+		rm -r --verbose "$i"  
+	fi 
+done
+for i in sorter/*
+do 
+	if [ $(du "$i" | cut -f1) == 4 ] 
+	then 
+		rm -r --verbose "$i"  
+	fi 
+done
