@@ -106,3 +106,45 @@ do
 		rm -r --verbose "$i"  
 	fi 
 done
+
+
+read -p "reduce quality now? [y]/[n]:" answer; 
+
+if [ $answer == "y" ]; 
+then 
+	for i in sorter/images/organic2reduce/*;
+	do
+		mogrify -verbose -resize 400 -strip -quality 80 "$i";
+	done
+	for i in sorter/images/document2reduce/*;
+	do
+		mogrify -verbose -resize 400 -strip -quality 80 "$i";
+	done
+fi
+
+
+read -p "reduce quality of all images in the folder organicFinal (which you have choosen for organicKeep) to 800? [y]/[n]:" answer; 
+
+if [ $answer == "y" ]; 
+then 
+	for i in sorter/images/organicFinal/*;
+	do
+		size=$(identify "$i" | cut -d ' ' -f 4 | cut -d 'x' -f 1);
+		if [ 800 -lt $size ];
+		then		
+			mogrify -verbose -resize 800 -strip -quality 80 "$i";
+		else
+			echo "file "$i" with the size of $size is not bigger then 800."
+		fi
+	done
+	for i in sorter/images/documentFinal/*;
+	do
+		size=$(identify "$i" | cut -d ' ' -f 4 | cut -d 'x' -f 1);
+		if [ 800 -lt $size ];
+		then		
+			mogrify -verbose -resize 800 -strip -quality 80 "$i";
+		else
+			echo "file "$i" with the size of $size is not bigger then 800."
+		fi
+	done
+fi
